@@ -17,13 +17,20 @@ def terminate_process(proc):
     Inspired by http://stackoverflow.com/a/25134985/358873
 
     TODO Check if terminate fails and kill instead?
+    Trying this now
     :return:
     """
     process = psutil.Process(proc.pid)
     for child in process.children(recursive=True):
         child.terminate()
 
+    print("terminating process %s (running: %s, status: %s)..." % (process.name(), process.is_running(), process.status()) )
     process.terminate()
+    try:
+        process.wait(timeout=3)
+    except psutil.TimeoutExpired:
+        printf("process did not terminate properly. Killing it.")
+        process.kill()
 
 
 class Supervisor(object):
