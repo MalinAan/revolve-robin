@@ -215,6 +215,7 @@ class Supervisor(object):
             return
 
         print("Launching analyzer...")
+        #this is where is sometimes hangs. cmd is launched but no ready msg
         self.procs['analyzer'] = self._launch_with_ready_str(self.analyzer_cmd, ready_str)
         self._add_output_stream('analyzer')
 
@@ -257,6 +258,7 @@ class Supervisor(object):
                 ready = True
 
             time.sleep(0.1)
+            sys.stdout.write('.')
 
         del self.procs['_tmp']
         return proc

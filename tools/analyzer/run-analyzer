@@ -1,5 +1,8 @@
 #!/bin/bash
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+echo $DIR
 BASE=$DIR/../../build
 ANALYZER=$BASE/body-analyzer
-ANALYZER_TOOL=1 GAZEBO_PLUGIN_PATH=$GAZEBO_PLUGIN_PATH:$BASE/lib $ANALYZER $DIR/analyzer-world.world
+# ANALYZER_TOOL=1 GAZEBO_PLUGIN_PATH=$GAZEBO_PLUGIN_PATH:$BASE/lib $ANALYZER $DIR/analyzer-world.world
+#try to avoid subprocessing that may not be terminated by the supervisor
+ANALYZER_TOOL=1 GAZEBO_PLUGIN_PATH=$GAZEBO_PLUGIN_PATH:$BASE/lib exec $ANALYZER $DIR/analyzer-world.world
