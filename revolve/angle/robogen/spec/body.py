@@ -34,11 +34,12 @@ def get_body_spec(conf):
             outputs=1,
             params=color_params
         ),
-        "Hinge": PartSpec(
-            body_part=Hinge,
-            arity=2,
-            params=color_params
-        ),
+        #removed passive joint / hinge from the mandatory list
+        # "Hinge": PartSpec(
+        #     body_part=Hinge,
+        #     arity=2,
+        #     params=color_params
+        # ),
         "ParametricBarJoint": PartSpec(
             body_part=ParametricBarJoint,
             arity=2,
@@ -63,6 +64,15 @@ def get_body_spec(conf):
             )] + color_params
         )
     }
+
+    if not conf.disable_passive_joints:
+        parts.update({
+            "Hinge": PartSpec(
+                body_part=Hinge,
+                arity=2,
+                params=color_params
+            ),
+        })
 
     if conf.enable_wheel_parts:
         parts.update({

@@ -9,7 +9,8 @@ class Config:
                  disable_sensors=False,
                  enable_touch_sensor=True,
                  enable_light_sensor=False,
-                 enable_wheel_parts=False):
+                 enable_wheel_parts=False,
+                 disable_passive_joints=False):
         self.max_inputs = max_inputs
         self.max_outputs = max_outputs
         self.body_mutation_epsilon = body_mutation_epsilon
@@ -18,5 +19,6 @@ class Config:
         self.enable_touch_sensor = enable_touch_sensor
         self.enable_light_sensor = enable_light_sensor
         self.enable_wheel_parts = enable_wheel_parts
+        self.disable_passive_joints = disable_passive_joints
         self.max_parts = max_parts
         self.min_parts = min_parts
