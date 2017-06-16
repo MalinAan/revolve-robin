@@ -34,12 +34,6 @@ def get_body_spec(conf):
             outputs=1,
             params=color_params
         ),
-        #removed passive joint / hinge from the mandatory list
-        # "Hinge": PartSpec(
-        #     body_part=Hinge,
-        #     arity=2,
-        #     params=color_params
-        # ),
         "ParametricBarJoint": PartSpec(
             body_part=ParametricBarJoint,
             arity=2,
