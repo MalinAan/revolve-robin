@@ -30,7 +30,7 @@ class WorldManager(manage.WorldManager):
 
     def __init__(self, builder, generator, world_address=None, analyzer_address=None,
                  output_directory=None, state_update_frequency=None,
-                 restore=None, _private=None):
+                 restore=None, _private=None, enable_pose_logging=True):
         """
 
         :param restore: Restore the world from this directory, if available. Only works
@@ -107,21 +107,23 @@ class WorldManager(manage.WorldManager):
                 shutil.copy(self.robots_filename+'.snapshot', self.robots_filename)
 
                 self.robots_file = open(self.robots_filename, 'ab')
-                self.poses_file = open(self.poses_filename, 'ab')
                 self.write_robots = csv.writer(self.robots_file, delimiter=',')
-                self.write_poses = csv.writer(self.poses_file, delimiter=',')
-            else:
-                # Open poses file, this is written *a lot* so use default OS buffering
-                self.poses_file = open(os.path.join(self.output_directory, 'poses.csv'), 'wb')
 
+                if enable_pose_logging:
+                    self.poses_file = open(self.poses_filename, 'ab')
+                    self.write_poses = csv.writer(self.poses_file, delimiter=',')
+            else:
                 # Open robots file line buffered so we can see it on the fly, isn't written
                 # too often.
                 self.robots_file = open(os.path.join(self.output_directory, 'robots.csv'), 'wb', buffering=1)
                 self.write_robots = csv.writer(self.robots_file, delimiter=',')
-                self.write_poses = csv.writer(self.poses_file, delimiter=',')
-
                 self.write_robots.writerow(self.robots_header())
-                self.write_poses.writerow(self.poses_header())
+
+                if enable_pose_logging:
+                    # Open poses file, this is written *a lot* so use default OS buffering
+                    self.poses_file = open(os.path.join(self.output_directory, 'poses.csv'), 'wb')
+                    self.write_poses = csv.writer(self.poses_file, delimiter=',')
+                    self.write_poses.writerow(self.poses_header())
 
     def robots_header(self):
         """
