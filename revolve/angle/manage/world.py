@@ -59,6 +59,7 @@ class WorldManager(manage.WorldManager):
         self.poses_filename = None
         self.snapshot_filename = None
         self.world_snapshot_filename = None
+        self.enable_pose_logging = enable_pose_logging
 
         self.state_update_frequency = state_update_frequency
         self.builder = builder
@@ -103,15 +104,15 @@ class WorldManager(manage.WorldManager):
             if self.do_restore:
                 # Copy snapshot files and open created files in append mode
                 # TODO Delete robot sdf / pb files that were created after the snapshot
-                shutil.copy(self.poses_filename+'.snapshot', self.poses_filename)
                 shutil.copy(self.robots_filename+'.snapshot', self.robots_filename)
-
                 self.robots_file = open(self.robots_filename, 'ab')
                 self.write_robots = csv.writer(self.robots_file, delimiter=',')
 
                 if enable_pose_logging:
+                    shutil.copy(self.poses_filename+'.snapshot', self.poses_filename)
                     self.poses_file = open(self.poses_filename, 'ab')
                     self.write_poses = csv.writer(self.poses_file, delimiter=',')
+
             else:
                 # Open robots file line buffered so we can see it on the fly, isn't written
                 # too often.
@@ -163,7 +164,8 @@ class WorldManager(manage.WorldManager):
         """
         if self.robots_file:
             self.robots_file.close()
-            self.poses_file.close()
+            if self.enable_pose_logging :
+                self.poses_file.close()
 
     @trollius.coroutine
     def _init(self):
@@ -231,10 +233,11 @@ class WorldManager(manage.WorldManager):
             pickle.dump(data, f, protocol=-1)
 
         # Flush statistic files and copy them
-        self.poses_file.flush()
         self.robots_file.flush()
-        shutil.copy(self.poses_filename, self.poses_filename+'.snapshot')
         shutil.copy(self.robots_filename, self.robots_filename+'.snapshot')
+        if self.enable_pose_logging:
+            self.poses_file.flush()
+            shutil.copy(self.poses_filename, self.poses_filename+'.snapshot')
         raise Return(True)
 
     @trollius.coroutine
