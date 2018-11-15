@@ -57,3 +57,4 @@ Given a working Gazebo installation, Revolve can be compiled using cmake followe
 to use the Python libraries right now is by using `pip install -e /path/to/revolve`. I'll update these instructions
 with more details as soon as I find the time.
 
+# revolve-robin
