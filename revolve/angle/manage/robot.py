@@ -171,7 +171,8 @@ class Robot(object):
         if time.is_zero():
             return 0.0
 
-        return np.sqrt(dist.x**2 + dist.y**2) / float(time)
+        return dist.x / float(time)
+        #return np.sqrt(dist.x**2 + dist.y**2) / float(time)
 
     def age(self):
         """
