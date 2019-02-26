@@ -131,7 +131,7 @@ class WorldManager(manage.WorldManager):
         Returns the header to be written to the robots file
         :return:
         """
-        return ['id', 'parent1', 'parent2', 'battery_level']
+        return ['id', 'parent1', 'parent2', 'battery_level', 'bbox_min_x', 'bbox_min_y', 'bbox_min_z', 'bbox_max_x', 'bbox_max_y', 'bbox_max_z']
 
     def poses_header(self):
         """
@@ -349,7 +349,7 @@ class WorldManager(manage.WorldManager):
         raise Return(coll, bbox, robot)
 
     @trollius.coroutine
-    def insert_robot(self, tree, pose, name=None, initial_battery=0.0, parents=None):
+    def insert_robot(self, tree, pose, name=None, initial_battery=0.0, parents=None, bbox=None):
         """
         Inserts a robot into the world. This consists of two steps:
 
@@ -387,7 +387,7 @@ class WorldManager(manage.WorldManager):
         return_future = Future()
         insert_future = yield From(self.insert_model(sdf))
         insert_future.add_done_callback(lambda fut: self._robot_inserted(
-            robot_name, tree, robot, initial_battery, parents, fut.result(), return_future
+            robot_name, tree, robot, initial_battery, parents, fut.result(), return_future, bbox
         ))
         raise Return(return_future)
 
@@ -430,7 +430,7 @@ class WorldManager(manage.WorldManager):
 
         raise Return(multi_future(futures))
 
-    def _robot_inserted(self, robot_name, tree, robot, initial_battery, parents, msg, return_future):
+    def _robot_inserted(self, robot_name, tree, robot, initial_battery, parents, msg, return_future, bbox=None):
         """
         Registers a newly inserted robot and marks the insertion
         message response as handled.
@@ -450,12 +450,14 @@ class WorldManager(manage.WorldManager):
         inserted = ModelInserted()
         inserted.ParseFromString(msg.serialized_data)
         model = inserted.model
-        time = Time(msg=inserted.time)
+        #print("Model")
+	#print(model)
+	time = Time(msg=inserted.time)
         p = model.pose.position
         position = Vector3(p.x, p.y, p.z)
 
         robot = self.create_robot_manager(robot_name, tree, robot, position, time, initial_battery, parents)
-        self.register_robot(robot)
+        self.register_robot(robot, bbox)
         return_future.set_result(robot)
 
     def create_robot_manager(self, robot_name, tree, robot, position, time, battery_level, parents):
@@ -472,7 +474,7 @@ class WorldManager(manage.WorldManager):
         """
         return Robot(robot_name, tree, robot, position, time, battery_level, parents=parents)
 
-    def register_robot(self, robot):
+    def register_robot(self, robot, bbox=None):
         """
         Registers a robot with its Gazebo ID in the local array.
         :param robot:
@@ -488,7 +490,7 @@ class WorldManager(manage.WorldManager):
         if self.output_directory:
             # Write robot details and CSV row to files
             robot.write_robot(self, '%s/robot_%d.pb' % (self.output_directory, robot.robot.id),
-                              self.write_robots)
+                              self.write_robots, bbox)
 
     def unregister_robot(self, robot):
         """

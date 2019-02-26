@@ -54,7 +54,7 @@ class Robot(object):
         self._idx = 0
         self._count = 0
 
-    def write_robot(self, world, details_file, csv_writer):
+    def write_robot(self, world, details_file, csv_writer, bbox=None):
         """
         Writes this robot to a file. This simply writes the
         protobuf bot to a file, which can later be recovered
@@ -72,6 +72,15 @@ class Robot(object):
         row = [self.robot.id]
         row += list(self.parent_ids) if self.parent_ids else ['', '']
         row += [self.get_battery_level()]
+
+	if bbox:
+		row += bbox.min.x
+		row += bbox.min.y
+		row += bbox.min.z
+		row += bbox.max.x
+		row += bbox.max.y
+		row += bbox.max.z
+
         csv_writer.writerow(row)
 
     def update_state(self, world, time, state, poses_file):
