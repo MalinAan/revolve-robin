@@ -171,9 +171,21 @@ class Robot(object):
         if time.is_zero():
             return 0.0
 
+        #return dist.x / float(time)
+        return np.sqrt(dist.x**2 + dist.y**2) / float(time)
+
+    def speed_x_direction(self):
+        """
+        Returns the speed in the x direction
+        :return:
+        """
+        dist, time = self.displacement()
+        if time.is_zero():
+            return 0.0
+
         return dist.x / float(time)
         #return np.sqrt(dist.x**2 + dist.y**2) / float(time)
-
+        
     def age(self):
         """
         Returns this robot's age as a Time object.
